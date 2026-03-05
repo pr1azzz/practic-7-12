@@ -13,7 +13,5 @@
 1. Установите зависимости:
 ```bash
 npm install
-2. Запуск:
-```bash
-npm start
+
 ![alt text](image-1.png)
