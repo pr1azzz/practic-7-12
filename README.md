@@ -8,10 +8,4 @@
 - CRUD операциями для товаров
 - Swagger документацией
 
-## Установка и запуск
-
-1. Установите зависимости:
-```bash
-npm install
-
-![alt text](image.png)
+![alt text](image-1.png)
