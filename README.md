@@ -16,4 +16,4 @@ npm install
 2. Запуск:
 ```bash
 npm start
-![alt text](img/image.png)
+![alt text](img/image-1.png)
