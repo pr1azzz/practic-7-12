@@ -26,3 +26,12 @@
 ![alt text](img/image-12.png)
 ![alt text](img/image-13.png)
 ![alt text](img/image-14.png)
+# Практическое задание №10
+Необходимо доработать задание из практического занятия №9: реализуйте фронтендчасть приложения с использованием React.js или Vue.js (на выбор) и свяжите её с
+серверной частью.
+![alt text](img/image-15.png)
+![alt text](img/image-16.png)
+![alt text](img/image-17.png)
+![alt text](img/image-18.png)
+![alt text](img/image-19.png)
+![alt text](img/image-20.png)
