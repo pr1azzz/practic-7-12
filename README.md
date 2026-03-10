@@ -18,3 +18,11 @@
 ![alt text](img/image-8.png)
 ![alt text](img/image-9.png)
 ![alt text](img/image-10.png)
+
+# Практическое задание №9
+Необходимо доработать программу из практического занятия №8: реализуйте
+генерацию refresh-токенов и добавьте маршрут:
+![alt text](img/image-11.png)
+![alt text](img/image-12.png)
+![alt text](img/image-13.png)
+![alt text](img/image-14.png)
