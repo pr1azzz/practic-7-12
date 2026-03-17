@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { productApi } from '../services/api';
+import { AuthService } from '../services/auth';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(''); // Исправлено: была незакрытая строка
+  const [error, setError] = useState('');
+  const user = AuthService.getUser();
 
   useEffect(() => {
     fetchProduct();
@@ -50,8 +52,20 @@ const ProductDetail = () => {
         <p><strong>Дата создания:</strong> {new Date(product.createdAt).toLocaleString()}</p>
         <div style={{ marginTop: '20px' }}>
           <Link to="/products" className="btn">Назад к списку</Link>
-          <Link to={`/products/${id}/edit`} className="btn btn-success">Редактировать</Link>
-          <button onClick={handleDelete} className="btn btn-danger">Удалить</button>
+          
+          {/* Продавцы и админы могут редактировать */}
+          {(user?.role === 'seller' || user?.role === 'admin') && (
+            <Link to={`/products/${id}/edit`} className="btn btn-success">
+              Редактировать
+            </Link>
+          )}
+          
+          {/* Только админы могут удалять */}
+          {user?.role === 'admin' && (
+            <button onClick={handleDelete} className="btn btn-danger">
+              Удалить
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { productApi } from '../services/api';
+import { AuthService } from '../services/auth';
 
 const ProductsList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const user = AuthService.getUser();
 
   useEffect(() => {
     fetchProducts();
@@ -51,8 +53,20 @@ const ProductsList = () => {
               <p><strong>Описание:</strong> {product.description.substring(0, 100)}...</p>
               <div className="product-actions">
                 <Link to={`/products/${product.id}`} className="btn">Просмотр</Link>
-                <Link to={`/products/${product.id}/edit`} className="btn btn-success">Редактировать</Link>
-                <button onClick={() => handleDelete(product.id)} className="btn btn-danger">Удалить</button>
+                
+                {/* Продавцы и админы могут редактировать */}
+                {(user?.role === 'seller' || user?.role === 'admin') && (
+                  <Link to={`/products/${product.id}/edit`} className="btn btn-success">
+                    Редактировать
+                  </Link>
+                )}
+                
+                {/* Только админы могут удалять */}
+                {user?.role === 'admin' && (
+                  <button onClick={() => handleDelete(product.id)} className="btn btn-danger">
+                    Удалить
+                  </button>
+                )}
               </div>
             </div>
           ))}

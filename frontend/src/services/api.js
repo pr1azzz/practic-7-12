@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:5001/api';
 
-// Создаем экземпляр axios с базовым URL
 const apiClient = axios.create({
   baseURL: API_URL,
   headers: {
@@ -10,7 +9,7 @@ const apiClient = axios.create({
   },
 });
 
-// Перехватчик запросов - добавляем токен в каждый запрос
+// Интерцептор для добавления токена
 apiClient.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem('accessToken');
@@ -19,25 +18,21 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Перехватчик ответов - обрабатываем истекший токен
+// Интерцептор для обработки 401 ошибок
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Если ошибка 401 и это не повторный запрос
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       const refreshToken = localStorage.getItem('refreshToken');
       const accessToken = localStorage.getItem('accessToken');
 
-      // Если нет токенов - перенаправляем на логин
       if (!accessToken || !refreshToken) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
@@ -46,23 +41,19 @@ apiClient.interceptors.response.use(
       }
 
       try {
-        // Пытаемся обновить токены
         const response = await axios.post(`${API_URL}/auth/refresh`, {
           refreshToken
         });
 
         const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data;
 
-        // Сохраняем новые токены
         localStorage.setItem('accessToken', newAccessToken);
         localStorage.setItem('refreshToken', newRefreshToken);
 
-        // Обновляем заголовок и повторяем запрос
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return apiClient(originalRequest);
 
       } catch (refreshError) {
-        // Если обновить не удалось - очищаем токены и перенаправляем на логин
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         window.location.href = '/login';
@@ -70,17 +61,31 @@ apiClient.interceptors.response.use(
       }
     }
 
+    // Обработка 403 ошибок (недостаточно прав)
+    if (error.response?.status === 403) {
+      // Можно показать уведомление пользователю
+      console.error('Access denied:', error.response.data);
+    }
+
     return Promise.reject(error);
   }
 );
 
-// API методы для работы с товарами
+// API методы для товаров
 export const productApi = {
   getAll: () => apiClient.get('/products'),
   getById: (id) => apiClient.get(`/products/${id}`),
   create: (data) => apiClient.post('/products', data),
   update: (id, data) => apiClient.put(`/products/${id}`, data),
   delete: (id) => apiClient.delete(`/products/${id}`)
+};
+
+// API методы для пользователей (только для админов)
+export const userApi = {
+  getAll: () => apiClient.get('/users'),
+  getById: (id) => apiClient.get(`/users/${id}`),
+  update: (id, data) => apiClient.put(`/users/${id}`, data),
+  delete: (id) => apiClient.delete(`/users/${id}`)
 };
 
 // API методы для аутентификации

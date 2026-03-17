@@ -15,18 +15,20 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div>
-        <Link to="/products">Главная</Link>
-        {isAuthenticated && (
-          <>
-            <Link to="/products/new">Добавить товар</Link>
-          </>
+        <Link to="/products">Товары</Link>
+        {isAuthenticated && user?.role === 'admin' && (
+          <Link to="/users">Пользователи</Link>
+        )}
+        {isAuthenticated && (user?.role === 'seller' || user?.role === 'admin') && (
+          <Link to="/products/new">Добавить товар</Link>
         )}
       </div>
       <div>
         {isAuthenticated ? (
           <>
             <span style={{ marginRight: '1rem' }}>
-              {user?.first_name} {user?.last_name}
+              {user?.first_name} {user?.last_name} 
+              <span className="role-badge">({user?.role})</span>
             </span>
             <button onClick={handleLogout}>Выйти</button>
           </>
